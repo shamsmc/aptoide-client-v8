@@ -103,7 +103,7 @@ import cm.aptoide.pt.v8engine.billing.repository.InAppTransactionRepository;
 import cm.aptoide.pt.v8engine.billing.repository.PaidAppProductRepository;
 import cm.aptoide.pt.v8engine.billing.repository.PaidAppTransactionRepository;
 import cm.aptoide.pt.v8engine.billing.repository.PaymentMethodMapper;
-import cm.aptoide.pt.v8engine.billing.repository.PaymentRepositoryFactory;
+import cm.aptoide.pt.v8engine.billing.repository.TransactionRepositoryFactory;
 import cm.aptoide.pt.v8engine.billing.repository.ProductFactory;
 import cm.aptoide.pt.v8engine.billing.repository.ProductRepositoryFactory;
 import cm.aptoide.pt.v8engine.billing.repository.PurchaseFactory;
@@ -752,7 +752,8 @@ public abstract class V8Engine extends Application {
 
       final TransactionFactory confirmationFactory = new TransactionFactory();
 
-      final PaymentRepositoryFactory paymentRepositoryFactory = new PaymentRepositoryFactory(
+      final TransactionRepositoryFactory
+          transactionRepositoryFactory = new TransactionRepositoryFactory(
           new InAppTransactionRepository(getNetworkOperatorManager(),
               AccessorFactory.getAccessorFor(PaymentConfirmation.class), getPaymentSyncScheduler(),
               confirmationFactory, getBaseBodyInterceptorV3(), getDefaultClient(),
@@ -770,7 +771,7 @@ public abstract class V8Engine extends Application {
           new PurchaseFactory(getInAppBillingSerializer(), getInAppBillingRepository());
 
       final PaymentMethodMapper paymentMethodMapper =
-          new PaymentMethodMapper(paymentRepositoryFactory, new AuthorizationRepository(
+          new PaymentMethodMapper(transactionRepositoryFactory, new AuthorizationRepository(
               AccessorFactory.getAccessorFor(PaymentAuthorization.class), getPaymentSyncScheduler(),
               getAuthorizationFactory(), getBaseBodyInterceptorV3(), getDefaultClient(),
               WebService.getDefaultConverter(), getAccountPayer(), getTokenInvalidator(),
@@ -786,7 +787,7 @@ public abstract class V8Engine extends Application {
               getNetworkOperatorManager(), getTokenInvalidator(), getDefaultSharedPreferences(),
               getPackageRepository()));
 
-      billing = new Billing(productRepositoryFactory, paymentRepositoryFactory,
+      billing = new Billing(productRepositoryFactory, transactionRepositoryFactory,
           getInAppBillingRepository());
     }
     return billing;

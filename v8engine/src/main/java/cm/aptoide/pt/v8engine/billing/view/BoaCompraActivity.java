@@ -9,7 +9,6 @@ import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebChromeClient;
@@ -17,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import cm.aptoide.pt.v8engine.R;
 import cm.aptoide.pt.v8engine.V8Engine;
+import cm.aptoide.pt.v8engine.view.rx.RxAlertDialog;
 import com.jakewharton.rxrelay.PublishRelay;
 import rx.Observable;
 
@@ -24,7 +24,7 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
 
   private WebView webView;
   private View progressBarContainer;
-  private AlertDialog unknownErrorDialog;
+  private RxAlertDialog unknownErrorDialog;
   private PublishRelay<Void> mainUrlSubject;
   private PublishRelay<Void> redirectUrlSubject;
   private PublishRelay<Void> backButtonSelectionSubject;
@@ -40,11 +40,9 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
         .setJavaScriptEnabled(true);
     webView.setWebChromeClient(new WebChromeClient());
     progressBarContainer = findViewById(R.id.activity_web_authorization_preogress_bar);
-    unknownErrorDialog = new AlertDialog.Builder(this).setMessage(R.string.having_some_trouble)
-        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-          finish();
-        })
-        .create();
+    unknownErrorDialog = new RxAlertDialog.Builder(this).setMessage(R.string.having_some_trouble)
+        .setPositiveButton(R.string.ok)
+        .build();
     mainUrlSubject = PublishRelay.create();
     redirectUrlSubject = PublishRelay.create();
     backButtonSelectionSubject = PublishRelay.create();
@@ -79,7 +77,7 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
     progressBarContainer.setVisibility(View.GONE);
   }
 
-  @Override public void showUrl(String mainUrl, String redirectUrl) {
+  @Override public void loadBoaCompraConsentWebsite(String mainUrl, String redirectUrl) {
     webView.setWebViewClient(new WebViewClient() {
 
       @Override public void onPageStarted(WebView view, String url, Bitmap favicon) {
@@ -99,7 +97,7 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
     webView.loadUrl(mainUrl);
   }
 
-  @Override public Observable<Void> backToStoreSelection() {
+  @Override public Observable<Void> backToStoreEvent() {
     return redirectUrlSubject;
   }
 
@@ -107,7 +105,7 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
     return backButtonSelectionSubject;
   }
 
-  @Override public Observable<Void> urlLoad() {
+  @Override public Observable<Void> boaCompraConsentWebsiteLoaded() {
     return mainUrlSubject;
   }
 
@@ -115,7 +113,12 @@ public class BoaCompraActivity extends ProductActivity implements BoaCompraView 
     finish();
   }
 
-  @Override public void showErrorAndDismiss() {
+  @Override public void showError() {
     unknownErrorDialog.show();
+  }
+
+  @Override public Observable<Void> errorDismissedEvent() {
+    return unknownErrorDialog.dismisses()
+        .map(dialogInterface -> null);
   }
 }
