@@ -1,5 +1,6 @@
 package cm.aptoide.pt.v8engine.view.navigator;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,12 +11,15 @@ public interface ActivityNavigator {
   Observable<Result> navigateForResult(Class<? extends AppCompatActivity> activityClass,
       int requestCode);
 
+  Observable<Result> navigateForResult(Class<? extends Activity> activityClass, int requestCode,
+      Bundle bundle);
+
   void navigateTo(Class<? extends AppCompatActivity> activityClass);
 
   void navigateTo(Class<? extends AppCompatActivity> activityClass, Bundle bundle);
 
   void finish(int code, Bundle bundle);
-  
+
   class Result {
 
     private final int requestCode;
