@@ -81,9 +81,10 @@ import retrofit2.Converter;
         ((V8Engine) getContext().getApplicationContext()).getTokenInvalidator(),
         ((V8Engine) getContext().getApplicationContext()).getDefaultSharedPreferences(),
         getContext().getResources());
-    shareAppHelper = new ShareAppHelper(RepositoryFactory.getInstalledRepository(), accountManager,
-        accountNavigator, getContext(), new SpotAndShareAnalytics(Analytics.getInstance()),
-        displayable.getTimelineAnalytics(),
+    shareAppHelper = new ShareAppHelper(
+        RepositoryFactory.getInstalledRepository(getContext().getApplicationContext()),
+        accountManager, accountNavigator, getContext(),
+        new SpotAndShareAnalytics(Analytics.getInstance()), displayable.getTimelineAnalytics(),
         ((V8Engine) getContext().getApplicationContext()).getDefaultSharedPreferences());
     appName = pojo.getName();
     packageName = pojo.getPackageName();
