@@ -294,5 +294,13 @@ class RealmToRealmDatabaseMigration implements RealmMigration {
           .transform(obj -> obj.setInt("type", Installed.TYPE_UNKNOWN));
       oldVersion++;
     }
+
+    if (oldVersion == 8086) {
+      realm.delete(PaymentConfirmation.class.getSimpleName());
+      schema.get("PaymentConfirmation")
+          .addField("clientToken", String.class);
+
+      oldVersion++;
+    }
   }
 }
